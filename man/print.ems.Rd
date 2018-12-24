@@ -4,10 +4,10 @@
 \alias{print.ems}
 \title{Print Method for ems Objects}
 \usage{
-\method{print}{ems}(obj, ...)
+\method{print}{ems}(x, ...)
 }
 \arguments{
-\item{obj}{an ems object.}
+\item{x}{an ems object.}
 
 \item{...}{currently ignored.}
 }

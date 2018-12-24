@@ -206,20 +206,20 @@ ems <- function(formula,data,random=NULL,type="III",restricted=FALSE) {
 ##' Print method for ems objects
 ##'
 ##' @title Print Method for ems Objects
-##' @param obj an ems object.
+##' @param x an ems object.
 ##' @param ... currently ignored.
 ##' @importFrom stats printCoefmat
 ##' @export
-print.ems <-function(obj,...) {
-  cat("\nCall:\n", deparse(obj$call), "\n", sep = "")
+print.ems <-function(x,...) {
+  cat("\nCall:\n", deparse(x$call), "\n", sep = "")
   cat("\nTerms:\n",
-      paste(encodeString(names(obj$terms),width=NULL),
-            ifelse(obj$terms,"Random","Fixed"),
+      paste(encodeString(names(x$terms),width=NULL),
+            ifelse(x$terms,"Random","Fixed"),
             sep=": ",collapse="\n"),"\n\n",sep="")
-  if(obj$restricted)
+  if(x$restricted)
     cat("EMS (Restricted model):\n")
   else
     cat("EMS (Unrestricted model):\n")
-  printCoefmat(obj$EMS,zap.ind=1:ncol(obj$EMS))
+  printCoefmat(x$EMS,zap.ind=1:ncol(x$EMS))
 }
 
