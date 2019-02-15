@@ -1,7 +1,7 @@
 ##' Compute the projection onto the column space of the matrix X.
 ##' @title Column Space of a Matrix
 ##' @param X a matrix.
-##' @return A matrix.
+##' @return A projection matrix.
 qr.projection <- function(X) {
   QR <- qr(X)
   Q <- qr.Q(QR)[,seq_len(QR$rank),drop=F]
@@ -15,11 +15,11 @@ qr.projection <- function(X) {
 ##' column space of the matrix X.
 ##' @title Complement of Column Space of a Matrix
 ##' @param X a matrix.
-##' @return A matrix.
+##' @return A projection matrix.
 qr.complement <- function(X) {
   ## orthonormal basis for column space
   Q <- qr.projection(X)
-  ## P = I - QQ^T
+  ## Form P = I - QQ^T
   P <- -tcrossprod(Q)
   diag(P) <- diag(P)+1
   P
@@ -109,8 +109,8 @@ project.effects <- function(formula,data,type=c("I","II","III")) {
 ##'   factors in the term.
 ##' @param random A logical vector indicating which factors are
 ##'   random.
-##' @param restricted A logical indicating whether the model is
-##'   restricted or unrestricted.
+##' @param restricted A logical indicating whether to assume a
+##'   restricted or unrestricted model.
 ##' @return A matrix
 term.matrix <- function(frame,random,restricted) {
   if(!restricted && any(random)) {
@@ -153,7 +153,7 @@ term.matrix <- function(frame,random,restricted) {
 ##' \item{terms}{a logical vector indicating which model terms are random.}
 ##' \item{EMS}{a table of the coefficients in the expansions of the EMS.}
 ##' @export
-ems <- function(formula,data,random=NULL,type="III",restricted=FALSE) {
+ems <- function(formula,data,random=NULL,type=c("III","I","II"),restricted=FALSE) {
 
   ## Model frame and terms
   cl <- match.call()
@@ -163,7 +163,8 @@ ems <- function(formula,data,random=NULL,type="III",restricted=FALSE) {
   mf <- eval(mf, parent.frame())
   mt <- delete.response(attr(mf, "terms"))
 
-  ## Projection onto effects
+  ## Projection onto effects and degrees of freedom
+  type <- match.arg(type)
   eff <- project.effects(formula,mf,type=type)
   df <- table(eff$assign)
   rdf <- nrow(mf)-sum(df)
@@ -178,11 +179,12 @@ ems <- function(formula,data,random=NULL,type="III",restricted=FALSE) {
   vrs <- rownames(fac)
   tms <- colnames(fac)
 
-  ## Which variables and terms are random
+  ## Which variables and terms are considered random
   rvrs <- setNames(vrs %in% random,vrs)
   rtms <- setNames(sapply(seq_along(tms),function(k) any(vrs[fac[,k]!=0] %in% random)),tms)
 
-  ## EMS are the projections of the columns of Z.
+  ## EMS are the sums of squares of the projected columns of the
+  ## (overparameterized) design matrix
   EMS <- matrix(0,length(tms),length(tms),dimnames=list(tms,tms))
   for(k in 1:ncol(fac)) {
     fs <- fac[,k]!=0
@@ -193,11 +195,8 @@ ems <- function(formula,data,random=NULL,type="III",restricted=FALSE) {
                rbind(EMS,Error=0),
                Error=if(rdf==0) 0 else 1)
 
-  r <- list(call=cl,
-            restricted=restricted,
-            variables=rvrs,
-            terms=rtms,
-            EMS=EMS)
+  r <- list(call=cl,restricted=restricted,
+            variables=rvrs,terms=rtms,EMS=EMS)
   class(r) <- "ems"
   r
 }

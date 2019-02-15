@@ -13,8 +13,8 @@ factors in the term.}
 \item{random}{A logical vector indicating which factors are
 random.}
 
-\item{restricted}{A logical indicating whether the model is
-restricted or unrestricted.}
+\item{restricted}{A logical indicating whether to assume a
+restricted or unrestricted model.}
 }
 \value{
 A matrix

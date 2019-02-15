@@ -4,7 +4,8 @@
 \alias{ems}
 \title{Expected Mean Squares for Anova}
 \usage{
-ems(formula, data, random = NULL, type = "III", restricted = FALSE)
+ems(formula, data, random = NULL, type = c("III", "I", "II"),
+  restricted = FALSE)
 }
 \arguments{
 \item{formula}{A formula describing the model.}

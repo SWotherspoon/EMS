@@ -10,7 +10,7 @@
 \item{X}{a matrix.}
 }
 \value{
-A matrix.
+A projection matrix.
 }
 \description{
 Compute the projection onto the column space of the matrix X.
